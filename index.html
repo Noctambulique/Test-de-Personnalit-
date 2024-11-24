@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Questionnaire de Personnalité</title>
+  <title>Test de Personnalité</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       line-height: 1.6;
       margin: 20px;
       padding: 0;
+      background-color: #f9f9f9;
     }
     h1 {
       color: #4CAF50;
@@ -19,9 +20,11 @@
     }
     .result {
       margin-top: 30px;
-      padding: 10px;
-      background-color: #f4f4f4;
-      border: 1px solid #ddd;
+      padding: 15px;
+      background-color: #e8f5e9;
+      border: 2px solid #4CAF50;
+      border-radius: 5px;
+      font-weight: bold;
       display: none;
     }
     button {
@@ -31,48 +34,80 @@
       padding: 10px 20px;
       cursor: pointer;
       border-radius: 5px;
+      font-size: 16px;
     }
     button:hover {
       background-color: #45a049;
     }
+    .error {
+      color: red;
+      margin-top: -15px;
+      margin-bottom: 15px;
+    }
   </style>
 </head>
 <body>
-  <h1>Questionnaire de Personnalité</h1>
+  <h1>Test de Personnalité</h1>
   <form id="quizForm">
     <div class="question">
-      <p>1. Vous aimez travailler :</p>
+      <p>1. Vous préférez passer votre temps :</p>
       <label><input type="radio" name="q1" value="1"> Seul</label><br>
-      <label><input type="radio" name="q1" value="2"> En équipe</label>
+      <label><input type="radio" name="q1" value="2"> Avec quelques amis proches</label><br>
+      <label><input type="radio" name="q1" value="3"> Dans un grand groupe</label>
     </div>
     <div class="question">
-      <p>2. Préférez-vous un environnement :</p>
-      <label><input type="radio" name="q2" value="1"> Calme</label><br>
-      <label><input type="radio" name="q2" value="2"> Animé</label>
+      <p>2. Vous aimez prendre des décisions :</p>
+      <label><input type="radio" name="q2" value="1"> Sur un coup de tête</label><br>
+      <label><input type="radio" name="q2" value="2"> En pesant les avantages et les inconvénients</label><br>
+      <label><input type="radio" name="q2" value="3"> Après avoir consulté les autres</label>
     </div>
-    <!-- Ajoute d'autres questions ici -->
     <div class="question">
-      <p>10. Quand vous prenez une décision :</p>
-      <label><input type="radio" name="q10" value="1"> Vous suivez votre instinct</label><br>
-      <label><input type="radio" name="q10" value="2"> Vous analysez les faits</label>
+      <p>3. Vous vous sentez le plus productif :</p>
+      <label><input type="radio" name="q3" value="1"> Le matin</label><br>
+      <label><input type="radio" name="q3" value="2"> L'après-midi</label><br>
+      <label><input type="radio" name="q3" value="3"> Le soir</label>
+    </div>
+    <div class="question">
+      <p>4. Quand on vous confie une tâche, vous :</p>
+      <label><input type="radio" name="q4" value="1"> Vous lancez immédiatement</label><br>
+      <label><input type="radio" name="q4" value="2"> Faites un plan avant de commencer</label><br>
+      <label><input type="radio" name="q4" value="3"> Attendez pour voir si c'est vraiment nécessaire</label>
+    </div>
+    <div class="question">
+      <p>5. Lorsque vous êtes confronté à un problème, vous :</p>
+      <label><input type="radio" name="q5" value="1"> Trouvez une solution rapide</label><br>
+      <label><input type="radio" name="q5" value="2"> Prenez votre temps pour réfléchir</label><br>
+      <label><input type="radio" name="q5" value="3"> Demandez de l'aide autour de vous</label>
     </div>
     <button type="button" onclick="calculateResult()">Voir le résultat</button>
   </form>
   <div id="result" class="result"></div>
   <script>
     function calculateResult() {
-  const form = document.getElementById('quizForm');
-  let score = 0;
+      const form = document.getElementById('quizForm');
+      const resultDiv = document.getElementById('result');
+      let score = 0;
 
-  // Vérifie que toutes les réponses ont été sélectionnées
-  for (let i = 1; i <= 10; i++) {
-    const answer = form[`q${i}`].value;
-    if (!answer) {
-      alert(`Veuillez répondre à la question ${i}.`);
-      return; // Arrête la fonction si une question est manquante
+      // Parcours des réponses
+      for (let i = 1; i <= 5; i++) {
+        const answer = form[`q${i}`];
+        if (!answer.value) {
+          alert(`Veuillez répondre à la question ${i}.`);
+          return;
+        }
+        score += parseInt(answer.value);
+      }
+
+      // Affiche le résultat basé sur le score total
+      if (score <= 7) {
+        resultDiv.innerHTML = "Vous êtes une personne calme et réfléchie, qui préfère le calme et la simplicité.";
+      } else if (score <= 12) {
+        resultDiv.innerHTML = "Vous êtes équilibré et sociable, avec une touche d'introspection.";
+      } else {
+        resultDiv.innerHTML = "Vous êtes extraverti, dynamique et aimez vivre dans l'action !";
+      }
+      resultDiv.style.display = "block";
     }
-    score += parseInt(answer);
-  }
-
-  // Affiche le résultat basé sur le score
- 
+  </script>
+</body>
+</html>
