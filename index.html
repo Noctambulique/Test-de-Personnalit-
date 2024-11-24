@@ -61,22 +61,18 @@
   <div id="result" class="result"></div>
   <script>
     function calculateResult() {
-      const form = document.getElementById('quizForm');
-      let score = 0;
-      for (let i = 1; i <= 10; i++) {
-        const answer = form[`q${i}`].value;
-        if (answer) score += parseInt(answer);
-      }
-      const resultDiv = document.getElementById('result');
-      if (score <= 15) {
-        resultDiv.innerHTML = "Vous êtes plutôt introspectif et calme.";
-      } else if (score <= 25) {
-        resultDiv.innerHTML = "Vous êtes équilibré et adaptable.";
-      } else {
-        resultDiv.innerHTML = "Vous êtes dynamique et extraverti !";
-      }
-      resultDiv.style.display = "block";
+  const form = document.getElementById('quizForm');
+  let score = 0;
+
+  // Vérifie que toutes les réponses ont été sélectionnées
+  for (let i = 1; i <= 10; i++) {
+    const answer = form[`q${i}`].value;
+    if (!answer) {
+      alert(`Veuillez répondre à la question ${i}.`);
+      return; // Arrête la fonction si une question est manquante
     }
-  </script>
-</body>
-</html>
+    score += parseInt(answer);
+  }
+
+  // Affiche le résultat basé sur le score
+ 
