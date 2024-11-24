@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Questionnaire de Personnalité</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 20px;
+      padding: 0;
+    }
+    h1 {
+      color: #4CAF50;
+    }
+    .question {
+      margin-bottom: 20px;
+    }
+    .result {
+      margin-top: 30px;
+      padding: 10px;
+      background-color: #f4f4f4;
+      border: 1px solid #ddd;
+      display: none;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <h1>Questionnaire de Personnalité</h1>
+  <form id="quizForm">
+    <div class="question">
+      <p>1. Vous aimez travailler :</p>
+      <label><input type="radio" name="q1" value="1"> Seul</label><br>
+      <label><input type="radio" name="q1" value="2"> En équipe</label>
+    </div>
+    <div class="question">
+      <p>2. Préférez-vous un environnement :</p>
+      <label><input type="radio" name="q2" value="1"> Calme</label><br>
+      <label><input type="radio" name="q2" value="2"> Animé</label>
+    </div>
+    <!-- Ajoute d'autres questions ici -->
+    <div class="question">
+      <p>10. Quand vous prenez une décision :</p>
+      <label><input type="radio" name="q10" value="1"> Vous suivez votre instinct</label><br>
+      <label><input type="radio" name="q10" value="2"> Vous analysez les faits</label>
+    </div>
+    <button type="button" onclick="calculateResult()">Voir le résultat</button>
+  </form>
+  <div id="result" class="result"></div>
+  <script>
+    function calculateResult() {
+      const form = document.getElementById('quizForm');
+      let score = 0;
+      for (let i = 1; i <= 10; i++) {
+        const answer = form[`q${i}`].value;
+        if (answer) score += parseInt(answer);
+      }
+      const resultDiv = document.getElementById('result');
+      if (score <= 15) {
+        resultDiv.innerHTML = "Vous êtes plutôt introspectif et calme.";
+      } else if (score <= 25) {
+        resultDiv.innerHTML = "Vous êtes équilibré et adaptable.";
+      } else {
+        resultDiv.innerHTML = "Vous êtes dynamique et extraverti !";
+      }
+      resultDiv.style.display = "block";
+    }
+  </script>
+</body>
+</html>
