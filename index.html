@@ -68,12 +68,7 @@
             <!-- Question content will be injected here -->
         </div>
 
-        <div id="resultContainer" class="result" style="display:none;">
-            <!-- Final result will be displayed here -->
-        </div>
-
         <div class="buttons">
-            <button id="prevBtn" class="button" onclick="navigate(-1)" style="display:none;">Précédent</button>
             <button id="nextBtn" class="button" onclick="navigate(1)">Suivant</button>
         </div>
     </div>
@@ -83,12 +78,12 @@
         const questions = [
             {
                 text: "Préférez-vous travailler seul ou en équipe ?",
-                choices: ["Seul", "En équipe"],
+                choices: ["Seul", "En équipe", "Un mix des deux"],
                 name: "q1"
             },
             {
                 text: "Quand vous êtes face à un problème difficile, vous agissez :",
-                choices: ["Logiquement", "Émotionnellement", "Un mélange des deux"],
+                choices: ["Logiquement", "Émotionnellement", "Un mélange des deux", "En demandant conseil"],
                 name: "q2"
             },
             {
@@ -108,7 +103,7 @@
             }
         ];
 
-        let currentQuestion = 0;
+        let currentQuestion = parseInt(window.location.search.split('q=')[1]) || 0;
         let answers = [];
 
         function renderQuestion() {
@@ -119,58 +114,37 @@
                     <label>${question.text}</label>
                     ${question.choices.map((choice, index) => `
                         <div>
-                            <input type="radio" name="${question.name}" value="${String.fromCharCode(65 + index)}"> ${choice}
+                            <input type="radio" name="${question.name}" value="${String.fromCharCode(65 + index)}" onclick="saveAnswer('${String.fromCharCode(65 + index)}')"> ${choice}
                         </div>
                     `).join('')}
                 </div>
             `;
         }
 
-        function navigate(direction) {
-            // Save answer if any selected
-            const selectedAnswer = document.querySelector(`input[name="${questions[currentQuestion].name}"]:checked`);
-            if (selectedAnswer) {
-                answers[currentQuestion] = selectedAnswer.value;
-            }
-
-            // Check if all questions are answered before moving to next question
-            if (answers.length > currentQuestion) {
-                currentQuestion += direction;
-
-                if (currentQuestion >= questions.length) {
-                    showResult();
-                } else {
-                    renderQuestion();
-                    updateButtons();
-                }
-            }
+        function saveAnswer(answer) {
+            answers[currentQuestion] = answer;
+            document.getElementById('nextBtn').disabled = false;
         }
 
-        function updateButtons() {
-            document.getElementById('prevBtn').style.display = currentQuestion > 0 ? 'inline-block' : 'none';
-            document.getElementById('nextBtn').innerText = currentQuestion === questions.length - 1 ? 'Terminer' : 'Suivant';
+        function navigate(direction) {
+            // Go to next question
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                window.location.href = `?q=${currentQuestion}`; // Change URL to the next question
+            } else {
+                showResult();
+            }
         }
 
         function showResult() {
-            document.getElementById('questionContainer').style.display = 'none';
-            document.getElementById('resultContainer').style.display = 'block';
-
-            // Combine answers to form a result
-            const path = answers.join('');
-            const responses = {
-                "AAAAA": "Vous êtes une personne très logique et indépendante.",
-                "AAAAB": "Vous êtes pratique, mais vous aimez aussi réfléchir avant d'agir.",
-                "AAABA": "Vous êtes calme et réfléchi, mais préférez travailler seul.",
-                "AAABB": "Vous aimez prendre des décisions rapidement tout en restant calme.",
-                // Add all 72 responses here
-            };
-
-            document.getElementById('resultContainer').textContent = responses[path] || "Votre personnalité est unique et difficile à définir simplement.";
+            const resultContainer = document.createElement('div');
+            resultContainer.className = 'result';
+            resultContainer.innerHTML = 'Votre test est terminé. Résultats : ' + answers.join(', ');
+            document.body.appendChild(resultContainer);
         }
 
-        // Initial call to render the first question
+        // Initial call to render the current question
         renderQuestion();
-        updateButtons();
     </script>
 
 </body>
