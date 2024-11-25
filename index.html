@@ -103,16 +103,20 @@
             }
         ];
 
-        // Index de la question courante (défaut : 0)
-        let currentQuestion = parseInt(new URLSearchParams(window.location.search).get('q')) || 0;
-        let answers = [];
-
-        // Tableau des réponses
+        // Réponses personnalisées
         const responses = {
             "AAAAA": "Vous êtes une personne très logique et indépendante.",
             "AAAAB": "Vous êtes pratique, mais vous aimez aussi réfléchir avant d'agir.",
+            "AAABA": "Vous êtes calme et réfléchi, mais préférez travailler seul.",
+            "AAABB": "Vous aimez prendre des décisions rapidement tout en restant calme.",
             // Ajoutez d'autres combinaisons ici
         };
+
+        // Index de la question courante
+        const currentQuestion = parseInt(new URLSearchParams(window.location.search).get('q')) || 0;
+
+        // Charger ou initialiser les réponses
+        let answers = JSON.parse(localStorage.getItem('answers')) || [];
 
         function renderQuestion() {
             const questionContainer = document.getElementById('questionContainer');
@@ -137,30 +141,41 @@
                 </div>
             `;
 
-            // Désactive le bouton "Suivant" jusqu'à ce qu'une réponse soit sélectionnée
+            // Désactive le bouton "Suivant" tant qu'aucune réponse n'est sélectionnée
             nextButton.disabled = true;
         }
 
         function saveAnswer(answer) {
             answers[currentQuestion] = answer;
+            localStorage.setItem('answers', JSON.stringify(answers)); // Sauvegarde les réponses
             document.getElementById('nextBtn').disabled = false; // Active le bouton "Suivant"
         }
 
         function navigate() {
-            // Incrémente l'index et recharge la page avec le paramètre de question
-            currentQuestion++;
-            window.location.href = `?q=${currentQuestion}`;
+            // Incrémente l'index de question et recharge la page
+            window.location.href = `?q=${currentQuestion + 1}`;
         }
 
         function showResult() {
             const resultContainer = document.getElementById('questionContainer');
             const path = answers.join('');
+
+            console.log('Answers:', answers); // Debugging des réponses
+            console.log('Path:', path); // Debugging du chemin généré
+
             const resultText = responses[path] || "Votre personnalité est unique et difficile à définir simplement.";
 
             // Affiche le résultat
             resultContainer.innerHTML = `<div class="result">${resultText}</div>`;
             document.getElementById('nextBtn').style.display = 'none'; // Cache le bouton "Suivant"
         }
+
+        // Nettoyer le stockage local une fois terminé
+        window.addEventListener('beforeunload', () => {
+            if (currentQuestion >= questions.length) {
+                localStorage.removeItem('answers');
+            }
+        });
 
         // Initialisation
         renderQuestion();
