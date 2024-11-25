@@ -112,17 +112,18 @@
             // Ajoutez d'autres combinaisons ici
         };
 
-        // Index de la question courante
+        // Récupère l'index de la question courante dans l'URL (ou 0 par défaut)
         const currentQuestion = parseInt(new URLSearchParams(window.location.search).get('q')) || 0;
 
-        // Charger ou initialiser les réponses
+        // Si aucune réponse n'est enregistrée, initialise un tableau vide
         let answers = JSON.parse(localStorage.getItem('answers')) || [];
 
+        // Fonction pour rendre la question
         function renderQuestion() {
             const questionContainer = document.getElementById('questionContainer');
             const nextButton = document.getElementById('nextBtn');
 
-            // Vérifie si on est à la fin du test
+            // Si on est à la fin du test, on affiche le résultat
             if (currentQuestion >= questions.length) {
                 showResult();
                 return;
@@ -135,6 +136,7 @@
                     <label>${question.text}</label>
                     ${question.choices.map((choice, index) => `
                         <div>
+                            <!-- Enregistre chaque réponse avec la valeur A, B, C, etc. -->
                             <input type="radio" name="${question.name}" value="${String.fromCharCode(65 + index)}" onclick="saveAnswer('${String.fromCharCode(65 + index)}')"> ${choice}
                         </div>
                     `).join('')}
@@ -145,23 +147,27 @@
             nextButton.disabled = true;
         }
 
+        // Fonction pour sauvegarder la réponse sélectionnée
         function saveAnswer(answer) {
-            answers[currentQuestion] = answer;
-            localStorage.setItem('answers', JSON.stringify(answers)); // Sauvegarde les réponses
+            answers[currentQuestion] = answer; // Enregistre la réponse dans le tableau
+            localStorage.setItem('answers', JSON.stringify(answers)); // Sauvegarde dans localStorage
             document.getElementById('nextBtn').disabled = false; // Active le bouton "Suivant"
         }
 
+        // Fonction pour aller à la question suivante
         function navigate() {
-            // Incrémente l'index de question et recharge la page
+            // Incrémente l'index de la question et recharge la page avec le nouvel index
             window.location.href = `?q=${currentQuestion + 1}`;
         }
 
+        // Fonction pour afficher le résultat à la fin du test
         function showResult() {
             const resultContainer = document.getElementById('questionContainer');
-            const path = answers.join('');
+            const path = answers.join(''); // Crée un chemin comme "AAAAA"
 
-            console.log('Answers:', answers); // Debugging des réponses
-            console.log('Path:', path); // Debugging du chemin généré
+            // Debugging : afficher les réponses et le chemin généré
+            console.log("Réponses enregistrées :", answers);
+            console.log("Chemin généré :", path);
 
             const resultText = responses[path] || "Votre personnalité est unique et difficile à définir simplement.";
 
