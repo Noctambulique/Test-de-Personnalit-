@@ -83,7 +83,7 @@
             },
             {
                 text: "Quand vous êtes face à un problème difficile, vous agissez :",
-                choices: ["Logiquement", "Émotionnellement", "Un mélange des deux"],
+                choices: ["Logiquement", "Émotionnellement", "Un mélange des deux", "En demandant conseil"],
                 name: "q2"
             },
             {
@@ -105,6 +105,15 @@
 
         let currentQuestion = parseInt(window.location.search.split('q=')[1]) || 0;
         let answers = [];
+
+        // Tableau de réponses personnalisées
+        const responses = {
+            "AAAAA": "Vous êtes une personne très logique et indépendante.",
+            "AAAAB": "Vous êtes pratique, mais vous aimez aussi réfléchir avant d'agir.",
+            "AAABA": "Vous êtes calme et réfléchi, mais préférez travailler seul.",
+            "AAABB": "Vous aimez prendre des décisions rapidement tout en restant calme.",
+            // Ajoutez toutes les autres réponses ici jusqu'à "ZZZZZ"
+        };
 
         function renderQuestion() {
             const question = questions[currentQuestion];
@@ -137,9 +146,14 @@
         }
 
         function showResult() {
+            const path = answers.join('');  // Crée une clé comme 'AAAAA' en fonction des réponses
             const resultContainer = document.createElement('div');
             resultContainer.className = 'result';
-            resultContainer.innerHTML = 'Votre test est terminé. Résultats : ' + answers.join(', ');
+
+            // Récupère la réponse personnalisée ou un message par défaut
+            resultContainer.innerHTML = responses[path] || "Votre personnalité est unique et difficile à définir simplement.";
+
+            // Affiche le résultat
             document.body.appendChild(resultContainer);
         }
 
