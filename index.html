@@ -149,10 +149,10 @@
 
         // Fonction pour sauvegarder la réponse sélectionnée
         function saveAnswer(answer) {
-            answers[currentQuestion] = answer; // Enregistre la réponse dans le tableau
-            localStorage.setItem('answers', JSON.stringify(answers)); // Sauvegarde dans localStorage
-            document.getElementById('nextBtn').disabled = false; // Active le bouton "Suivant"
-        }
+    answers[currentQuestion] = answer; // Enregistre la réponse dans le tableau
+    localStorage.setItem('answers', JSON.stringify(answers)); // Sauvegarde dans localStorage
+    document.getElementById('nextBtn').disabled = false; // Active le bouton "Suivant" immédiatement
+}
 
         // Fonction pour aller à la question suivante
         function navigate() {
