@@ -1,89 +1,170 @@
-<script>
-    // Questions and answers
-    const questions = [
-        {
-            text: "Préférez-vous travailler seul ou en équipe ?",
-            choices: ["Seul", "En équipe", "Un mix des deux"],
-            name: "q1"
-        },
-        {
-            text: "Quand vous êtes face à un problème difficile, vous agissez :",
-            choices: ["Logiquement", "Émotionnellement", "Un mélange des deux"],
-            name: "q2"
-        },
-        {
-            text: "Préférez-vous prendre des décisions rapidement ou après réflexion ?",
-            choices: ["Rapidement", "Après réflexion"],
-            name: "q3"
-        },
-        {
-            text: "Quand vous êtes stressé, vous :",
-            choices: ["Cherchez à régler le problème immédiatement", "Prenez du recul pour réfléchir avant d'agir"],
-            name: "q4"
-        },
-        {
-            text: "Vous préférez les environnements :",
-            choices: ["Calmes et ordonnés", "Dynamiques et stimulants"],
-            name: "q5"
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de personnalité</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fc;
+            margin: 0;
+            padding: 0;
         }
-    ];
+        .container {
+            width: 80%;
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        .question label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #555;
+        }
+        .question input[type="radio"] {
+            margin-right: 10px;
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
 
-    let currentQuestion = parseInt(window.location.search.split('q=')[1]) || 0;
-    let answers = [];
-    const nextButton = document.getElementById('nextBtn');
-    nextButton.disabled = true; // Désactive le bouton par défaut
+    <div class="container">
+        <h1>Test de personnalité</h1>
 
-    // Réponses personnalisées
-    const responses = {
-        "AAAAA": "Vous êtes une personne très logique et indépendante.",
-        "AAAAB": "Vous êtes pratique, mais vous aimez aussi réfléchir avant d'agir.",
-        "AAABA": "Vous êtes calme et réfléchi, mais préférez travailler seul.",
-        "AAABB": "Vous aimez prendre des décisions rapidement tout en restant calme.",
-        // Ajoutez toutes les autres réponses ici jusqu'à "ZZZZZ"
-    };
+        <div id="questionContainer">
+            <!-- Contenu des questions injecté ici -->
+        </div>
 
-    function renderQuestion() {
-        const question = questions[currentQuestion];
-        const questionContainer = document.getElementById('questionContainer');
-        questionContainer.innerHTML = `
-            <div class="question">
-                <label>${question.text}</label>
-                ${question.choices.map((choice, index) => `
-                    <div>
-                        <input type="radio" name="${question.name}" value="${String.fromCharCode(65 + index)}" onclick="saveAnswer('${String.fromCharCode(65 + index)}')"> ${choice}
-                    </div>
-                `).join('')}
-            </div>
-        `;
-    }
+        <div class="buttons">
+            <button id="nextBtn" class="button" onclick="navigate()">Suivant</button>
+        </div>
+    </div>
 
-    function saveAnswer(answer) {
-        answers[currentQuestion] = answer;
-        nextButton.disabled = false; // Active le bouton "Suivant"
-    }
+    <script>
+        // Questions et réponses
+        const questions = [
+            {
+                text: "Préférez-vous travailler seul ou en équipe ?",
+                choices: ["Seul", "En équipe", "Un mix des deux"],
+                name: "q1"
+            },
+            {
+                text: "Quand vous êtes face à un problème difficile, vous agissez :",
+                choices: ["Logiquement", "Émotionnellement", "Un mélange des deux"],
+                name: "q2"
+            },
+            {
+                text: "Préférez-vous prendre des décisions rapidement ou après réflexion ?",
+                choices: ["Rapidement", "Après réflexion"],
+                name: "q3"
+            },
+            {
+                text: "Quand vous êtes stressé, vous :",
+                choices: ["Cherchez à régler le problème immédiatement", "Prenez du recul pour réfléchir avant d'agir"],
+                name: "q4"
+            },
+            {
+                text: "Vous préférez les environnements :",
+                choices: ["Calmes et ordonnés", "Dynamiques et stimulants"],
+                name: "q5"
+            }
+        ];
 
-    function navigate(direction) {
-        if (currentQuestion < questions.length - 1) {
+        // Index de la question courante (défaut : 0)
+        let currentQuestion = parseInt(new URLSearchParams(window.location.search).get('q')) || 0;
+        let answers = [];
+
+        // Tableau des réponses
+        const responses = {
+            "AAAAA": "Vous êtes une personne très logique et indépendante.",
+            "AAAAB": "Vous êtes pratique, mais vous aimez aussi réfléchir avant d'agir.",
+            // Ajoutez d'autres combinaisons ici
+        };
+
+        function renderQuestion() {
+            const questionContainer = document.getElementById('questionContainer');
+            const nextButton = document.getElementById('nextBtn');
+
+            // Vérifie si on est à la fin du test
+            if (currentQuestion >= questions.length) {
+                showResult();
+                return;
+            }
+
+            // Charge la question courante
+            const question = questions[currentQuestion];
+            questionContainer.innerHTML = `
+                <div class="question">
+                    <label>${question.text}</label>
+                    ${question.choices.map((choice, index) => `
+                        <div>
+                            <input type="radio" name="${question.name}" value="${String.fromCharCode(65 + index)}" onclick="saveAnswer('${String.fromCharCode(65 + index)}')"> ${choice}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            // Désactive le bouton "Suivant" jusqu'à ce qu'une réponse soit sélectionnée
+            nextButton.disabled = true;
+        }
+
+        function saveAnswer(answer) {
+            answers[currentQuestion] = answer;
+            document.getElementById('nextBtn').disabled = false; // Active le bouton "Suivant"
+        }
+
+        function navigate() {
+            // Incrémente l'index et recharge la page avec le paramètre de question
             currentQuestion++;
-            window.location.href = `?q=${currentQuestion}`; // Redirige vers la question suivante
-        } else {
-            showResult();
+            window.location.href = `?q=${currentQuestion}`;
         }
-    }
 
-    function showResult() {
-        const path = answers.join('');  // Construit une clé comme 'AAAAA' à partir des réponses
-        const resultContainer = document.createElement('div');
-        resultContainer.className = 'result';
+        function showResult() {
+            const resultContainer = document.getElementById('questionContainer');
+            const path = answers.join('');
+            const resultText = responses[path] || "Votre personnalité est unique et difficile à définir simplement.";
 
-        // Récupère la réponse personnalisée ou un message par défaut
-        resultContainer.innerHTML = responses[path] || "Votre personnalité est unique et difficile à définir simplement.";
+            // Affiche le résultat
+            resultContainer.innerHTML = `<div class="result">${resultText}</div>`;
+            document.getElementById('nextBtn').style.display = 'none'; // Cache le bouton "Suivant"
+        }
 
-        // Affiche le résultat
-        document.body.innerHTML = ''; // Nettoie la page
-        document.body.appendChild(resultContainer); // Affiche uniquement le résultat
-    }
+        // Initialisation
+        renderQuestion();
+    </script>
 
-    // Initial call to render the current question
-    renderQuestion();
-</script>
+</body>
+</html>
