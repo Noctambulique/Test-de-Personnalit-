@@ -7,94 +7,170 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            background-color: #f4f7fc;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
         }
         .question {
             margin-bottom: 20px;
         }
+        .question label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #555;
+        }
+        .question input[type="radio"] {
+            margin-right: 10px;
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
         .result {
             margin-top: 20px;
+            text-align: center;
             font-weight: bold;
+            color: #333;
         }
     </style>
 </head>
 <body>
 
-    <h1>Test de personnalité</h1>
+    <div class="container">
+        <h1>Test de personnalité</h1>
 
-    <form id="quizForm">
-        <div class="question">
-            <label>Question 1 : Préférez-vous travailler seul ou en équipe ?</label><br>
-            <input type="radio" name="q1" value="A"> Seul<br>
-            <input type="radio" name="q1" value="B"> En équipe<br>
+        <div id="questionContainer">
+            <!-- Question content will be injected here -->
         </div>
 
-        <div class="question">
-            <label>Question 2 : Quand vous êtes face à un problème difficile, vous agissez :</label><br>
-            <input type="radio" name="q2" value="A"> Logiquement<br>
-            <input type="radio" name="q2" value="B"> Émotionnellement<br>
-            <input type="radio" name="q2" value="C"> Un mélange des deux<br>
+        <div id="resultContainer" class="result" style="display:none;">
+            <!-- Final result will be displayed here -->
         </div>
 
-        <div class="question">
-            <label>Question 3 : Préférez-vous prendre des décisions rapidement ou après réflexion ?</label><br>
-            <input type="radio" name="q3" value="A"> Rapidement<br>
-            <input type="radio" name="q3" value="B"> Après réflexion<br>
+        <div class="buttons">
+            <button id="prevBtn" class="button" onclick="navigate(-1)" style="display:none;">Précédent</button>
+            <button id="nextBtn" class="button" onclick="navigate(1)">Suivant</button>
         </div>
-
-        <div class="question">
-            <label>Question 4 : Quand vous êtes stressé, vous :</label><br>
-            <input type="radio" name="q4" value="A"> Cherchez à régler le problème immédiatement<br>
-            <input type="radio" name="q4" value="B"> Prenez du recul pour réfléchir avant d'agir<br>
-        </div>
-
-        <div class="question">
-            <label>Question 5 : Vous préférez les environnements :</label><br>
-            <input type="radio" name="q5" value="A"> Calmes et ordonnés<br>
-            <input type="radio" name="q5" value="B"> Dynamiques et stimulants<br>
-        </div>
-
-        <button type="button" onclick="calculateResult()">Voir votre résultat</button>
-    </form>
-
-    <div id="result" class="result"></div>
+    </div>
 
     <script>
-        function calculateResult() {
-            const form = document.getElementById('quizForm');
-            let result = '';
+        // Questions and answers
+        const questions = [
+            {
+                text: "Préférez-vous travailler seul ou en équipe ?",
+                choices: ["Seul", "En équipe"],
+                name: "q1"
+            },
+            {
+                text: "Quand vous êtes face à un problème difficile, vous agissez :",
+                choices: ["Logiquement", "Émotionnellement", "Un mélange des deux"],
+                name: "q2"
+            },
+            {
+                text: "Préférez-vous prendre des décisions rapidement ou après réflexion ?",
+                choices: ["Rapidement", "Après réflexion"],
+                name: "q3"
+            },
+            {
+                text: "Quand vous êtes stressé, vous :",
+                choices: ["Cherchez à régler le problème immédiatement", "Prenez du recul pour réfléchir avant d'agir"],
+                name: "q4"
+            },
+            {
+                text: "Vous préférez les environnements :",
+                choices: ["Calmes et ordonnés", "Dynamiques et stimulants"],
+                name: "q5"
+            }
+        ];
 
-            // Récupérer les réponses
-            const q1 = form.querySelector('input[name="q1"]:checked')?.value;
-            const q2 = form.querySelector('input[name="q2"]:checked')?.value;
-            const q3 = form.querySelector('input[name="q3"]:checked')?.value;
-            const q4 = form.querySelector('input[name="q4"]:checked')?.value;
-            const q5 = form.querySelector('input[name="q5"]:checked')?.value;
+        let currentQuestion = 0;
+        let answers = [];
 
-            // Assurez-vous que toutes les questions ont été répondues
-            if (!q1 || !q2 || !q3 || !q4 || !q5) {
-                result = 'Veuillez répondre à toutes les questions.';
-            } else {
-                // Calculer la réponse en fonction des combinaisons des réponses
-                const path = q1 + q2 + q3 + q4 + q5;
+        function renderQuestion() {
+            const question = questions[currentQuestion];
+            const questionContainer = document.getElementById('questionContainer');
+            questionContainer.innerHTML = `
+                <div class="question">
+                    <label>${question.text}</label>
+                    ${question.choices.map((choice, index) => `
+                        <div>
+                            <input type="radio" name="${question.name}" value="${String.fromCharCode(65 + index)}"> ${choice}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
 
-                // Exemple de correspondance de chemin avec une réponse personnalisée (72 chemins)
-                const responses = {
-                    "AAAAA": "Vous êtes une personne très logique et indépendante.",
-                    "AAAAB": "Vous êtes pratique, mais vous aimez aussi réfléchir avant d'agir.",
-                    "AAABA": "Vous êtes calme et réfléchi, mais préférez travailler seul.",
-                    "AAABB": "Vous aimez prendre des décisions rapidement tout en restant calme.",
-                    // Ajoutez ici toutes les autres combinaisons possibles pour 72 chemins
-                };
-
-                // Si la combinaison existe, afficher la réponse
-                result = responses[path] || "Votre personnalité est unique et difficile à définir simplement.";
-
+        function navigate(direction) {
+            // Save answer if any selected
+            const selectedAnswer = document.querySelector(`input[name="${questions[currentQuestion].name}"]:checked`);
+            if (selectedAnswer) {
+                answers[currentQuestion] = selectedAnswer.value;
             }
 
-            // Afficher le résultat
-            document.getElementById('result').textContent = result;
+            // Check if all questions are answered before moving to next question
+            if (answers.length > currentQuestion) {
+                currentQuestion += direction;
+
+                if (currentQuestion >= questions.length) {
+                    showResult();
+                } else {
+                    renderQuestion();
+                    updateButtons();
+                }
+            }
         }
+
+        function updateButtons() {
+            document.getElementById('prevBtn').style.display = currentQuestion > 0 ? 'inline-block' : 'none';
+            document.getElementById('nextBtn').innerText = currentQuestion === questions.length - 1 ? 'Terminer' : 'Suivant';
+        }
+
+        function showResult() {
+            document.getElementById('questionContainer').style.display = 'none';
+            document.getElementById('resultContainer').style.display = 'block';
+
+            // Combine answers to form a result
+            const path = answers.join('');
+            const responses = {
+                "AAAAA": "Vous êtes une personne très logique et indépendante.",
+                "AAAAB": "Vous êtes pratique, mais vous aimez aussi réfléchir avant d'agir.",
+                "AAABA": "Vous êtes calme et réfléchi, mais préférez travailler seul.",
+                "AAABB": "Vous aimez prendre des décisions rapidement tout en restant calme.",
+                // Add all 72 responses here
+            };
+
+            document.getElementById('resultContainer').textContent = responses[path] || "Votre personnalité est unique et difficile à définir simplement.";
+        }
+
+        // Initial call to render the first question
+        renderQuestion();
+        updateButtons();
     </script>
 
 </body>
